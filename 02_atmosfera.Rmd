@@ -12,35 +12,42 @@ library(dplyr)
 library(ggplot2)
 ```
 
-
 ```{r carga-datos}
 atmosfera <- datos::atmosfera
 ```
 
-
-1. Graficá la relación entre la presión y la temperatura. 
-¿Es una relación lineal más o menos limpia o hay otras cosas “raras”?
+1.  Graficá la relación entre la presión y la temperatura. ¿Es una relación lineal más o menos limpia o hay otras cosas “raras”?
 
 ```{r}
-
+ggplot(atmosfera, aes(temperatura,presion)) + geom_point()
+#es una relacion lineal menos limpia y parecea que hay muchas anomalias
 ```
 
-
-2. Calculá la temperatura media de cada mes y visualizalo en un gráfico de líneas.(Es decir, el ciclo anual promedio de temperatura). ¿Cómo describirías el ciclo anual en pocas palabras?
+2.  Calculá la temperatura media de cada mes y visualizalo en un gráfico de líneas.(Es decir, el ciclo anual promedio de temperatura). ¿Cómo describirías el ciclo anual en pocas palabras?
 
 ```{r}
+atmosfera |>
+  group_by(mes) |>
+  summarise(promedio_temperatura = mean(temperatura)) |>
+  ggplot(aes(x = mes, y = promedio_temperatura)) +
+  geom_point() +
+  geom_line()
 
+#El ciclo anual de temperatura muestra cómo cambia la temperatura promedio a lo largo de los meses del año, típicamente con temperaturas más altas en verano y más bajas en invierno.
 ```
 
-
-3. Calculá lo mismo pero para cada hemisferio. Graficalo con una línea de distinto color para cada hemisferio. 
-(Ayudas: La función sign() devuelve el signo de una variable; en el hemisferio sur la latitud es negativa y en el hemisferio norte, positiva. 
-Acordate del tema de los grupos y las líneas.)
+3.  Calculá lo mismo pero para cada hemisferio. Graficalo con una línea de distinto color para cada hemisferio. (Ayudas: La función sign() devuelve el signo de una variable; en el hemisferio sur la latitud es negativa y en el hemisferio norte, positiva. Acordate del tema de los grupos y las líneas.)
 
 ¿Cómo cambia tu descripción del ciclo anual ahora?
 
 ```{r}
-
+atmosfera |>
+  mutate(hemisferio = ifelse(sign(latitud)>0,"Norte","Sur")) |> 
+  group_by(mes,hemisferio) |>
+  summarise(promedio_temperatura = mean(temperatura)) |>
+  ggplot(aes(x = mes, y = promedio_temperatura, color = hemisferio)) +
+  geom_point() +
+  geom_line() 
+ 
+#En el Norte las temperaturas altas estan en meses de junio y agosto, en el Sur es de diciembre a Febrero
 ```
-
-
